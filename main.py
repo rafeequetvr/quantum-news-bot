@@ -5,9 +5,9 @@ import os
 from telegram import Bot
 
 # GitHub Secrets-ൽ നിന്നുള്ള വിവരങ്ങൾ
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-CHAT_ID = os.getenv('CHAT_ID')
+TELEGRAM_TOKEN = os.getenv('8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q')
+GEMINI_API_KEY = os.getenv('AIzaSyAd65Dgqtn4tilMwWR-9pYu3NgwnuOTF40')
+CHAT_ID = os.getenv('1328852027')
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
