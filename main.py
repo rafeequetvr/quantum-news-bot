@@ -26,7 +26,7 @@ async def get_quantum_news():
     print("Sending to Gemini AI for translation...")
     client = genai.Client(api_key=GEMINI_API_KEY)
     response = client.models.generate_content(
-        model="gemini-1.5-flash", 
+        models/gemini-1.5-flash, 
         contents=f"Summarize these Quantum Physics news into simple Malayalam bullet points:\n\n{combined_news}"
     )
     return response.text
