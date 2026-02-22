@@ -2,24 +2,29 @@ name: Quantum News Daily
 
 on:
   schedule:
-    - cron: '30 2 * * *' # ദിവസവും രാവിലെ 8 AM (IST)
-  workflow_dispatch: # നേരിട്ട് റൺ ചെയ്യാൻ ഇത് സഹായിക്കും
+    - cron: '30 2 * * *' 
+  workflow_dispatch: 
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+    # ഇവിടെയാണ് നമ്മൾ കീ കൾ കണക്ട് ചെയ്യുന്നത്
+    env:
+      TELEGRAM_TOKEN: ${{8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q}}
+      GEMINI_API_KEY: ${{AIzaSyAd65Dgqtn4tilMwWR-9pYu3NgwnuOTF40}}
+      CHAT_ID: ${{1328852027}}
+    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
+
       - name: Install dependencies
         run: pip install -r requirements.txt
+
       - name: Run script
-        env:
-          TELEGRAM_TOKEN: ${{8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q}}
-          GEMINI_API_KEY: ${{AIzaSyAd65Dgqtn4tilMwWR-9pYu3NgwnuOTF40}}
-          CHAT_ID: ${{1328852027}}
         run: python main.py
