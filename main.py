@@ -49,8 +49,5 @@ async def send_to_telegram():
         await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode='Markdown')
         print("Success! News sent to Telegram.")
     except Exception as e:
-        print(f"Error during Telegram send: {e}")
-        sys.exit(1)
-
-if __name__ == "__main__":
-    asyncio.run(send_to_telegram())
+        # ഇവിടെ sys.exit(1) ഒഴിവാക്കുന്നു, പകരം എറർ പ്രിന്റ് ചെയ്യുന്നു
+        print(f"Telegram error (Logged): {e}")
