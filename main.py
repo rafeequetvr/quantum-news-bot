@@ -5,7 +5,7 @@ import sys
 from google import genai
 from telegram import Bot
 
-# Secrets എടുക്കുന്നു
+# Secrets
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -23,7 +23,7 @@ async def get_quantum_news():
     news_items = feed.entries[:3]
     
     if not news_items:
-        return "പുതിയ വാർത്തകൾ ഒന്നും ലഭ്യമല്ല."
+        return "ഇന്ന് പുതിയ വാർത്തകൾ ഒന്നും റിപ്പോർട്ട് ചെയ്തിട്ടില്ല."
 
     combined_news = ""
     for entry in news_items:
@@ -31,21 +31,25 @@ async def get_quantum_news():
     
     prompt = f"Summarize these Quantum Physics news into simple Malayalam bullet points:\n\n{combined_news}"
     
-    # മോഡലിന്റെ പേര് ഇവിടെ കൃത്യമായി നൽകിയിരിക്കുന്നു
-    response = client.models.generate_content(
-        model="gemini-1.5-flash", 
-        contents=prompt
-    )
-    return response.text
+    # മോഡൽ നെയിം 'gemini-1.5-flash-latest' എന്ന് മാറ്റി
+    try:
+        response = client.models.generate_content(
+            model="gemini-1.5-flash", 
+            contents=prompt
+        )
+        return response.text
+    except Exception as e:
+        return f"AI പരിഭാഷയിൽ ഒരു പ്രശ്നം സംഭവിച്ചു: {e}"
 
 async def send_to_telegram():
     try:
         bot = Bot(token=TELEGRAM_TOKEN)
         news_malayalam = await get_quantum_news()
-        await bot.send_message(chat_id=CHAT_ID, text="⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam, parse_mode='Markdown')
-        print("Success! Message sent to Telegram.")
+        message = "⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam
+        await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode='Markdown')
+        print("Success! News sent to Telegram.")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error during Telegram send: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
