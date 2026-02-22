@@ -1,4 +1,4 @@
-name: Quantum News Daily
+name: Quantum News Daily Bot
 
 on:
   schedule:
@@ -18,11 +18,13 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run script
         env:
-          TELEGRAM_TOKEN: ${{8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q}}
-          GEMINI_API_KEY: ${{AIzaSyAd65Dgqtn4tilMwWR-9pYu3NgwnuOTF40}}
-          CHAT_ID: ${{1328852027}}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python main.py
