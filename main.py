@@ -37,7 +37,7 @@ async def get_quantum_news():
 
 async def send_to_telegram():
     try:
-        bot = Bot(token=TELEGRAM_TOKEN)
+        bot = Bot(token=8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q)
         news_malayalam = await get_quantum_news()
         await bot.send_message(chat_id=CHAT_ID, text="⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam, parse_mode='Markdown')
         print("Message sent successfully!")
