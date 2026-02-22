@@ -5,7 +5,7 @@ import sys
 from google import genai
 from telegram import Bot
 
-# Secrets എടുക്കുന്നു
+# Secrets
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -23,15 +23,19 @@ async def get_quantum_news():
     for entry in news_items:
         combined_news += f"Title: {entry.title}\nSummary: {entry.summary}\n\n"
     
-    print("Sending to Gemini AI for translation...")
+    print("Connecting to Gemini AI...")
     client = genai.Client(api_key=GEMINI_API_KEY)
     
-    # മോഡൽ നെയിം ചിലപ്പോൾ 'gemini-1.5-flash-latest' എന്ന് നൽകേണ്ടി വരും
-    response = client.models.generate_content(
-        model="gemini-1.5-flash", 
-        contents=f"Summarize these news into simple Malayalam bullet points:\n\n{combined_news}"
-    )
-    return response.text
+    # മാറ്റം വരുത്തിയ വരി ഇവിടെയാണ്: gemini-1.5-flash-latest എന്ന് നൽകി നോക്കുന്നു
+    try:
+        response = client.models.generate_content(
+            model="gemini-1.5-flash-latest", 
+            contents=f"Summarize these news into simple Malayalam bullet points:\n\n{combined_news}"
+        )
+        return response.text
+    except Exception as e:
+        print(f"AI Error: {e}")
+        return "AI പരിഭാഷയിൽ ഒരു തടസ്സം നേരിട്ടു."
 
 async def send_to_telegram():
     try:
@@ -49,10 +53,9 @@ async def send_to_telegram():
         print("✅ SUCCESS: Message sent to Telegram!")
     except Exception as e:
         print(f"❌ ERROR: {e}")
-        # എറർ വന്നാൽ പ്രോഗ്രാം നിർത്താതിരിക്കാൻ sys.exit ഒഴിവാക്കി
 
 if __name__ == "__main__":
     if not TELEGRAM_TOKEN or not GEMINI_API_KEY or not CHAT_ID:
-        print("❌ ERROR: Missing Secrets in GitHub Settings!")
+        print("❌ ERROR: Missing Secrets!")
     else:
         asyncio.run(send_to_telegram())
