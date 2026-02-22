@@ -1,23 +1,21 @@
 import feedparser
-import google.generativeai as genai
 import asyncio
 import os
 import sys
+from google import genai
 from telegram import Bot
 
-# ശരിയായ രീതിയിൽ കോട്ടേഷൻ മാർക്കിനുള്ളിൽ (Quotes) പേര് നൽകുന്നു
+# രഹസ്യകോഡുകൾ എടുക്കുന്നു
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 CHAT_ID = os.getenv("CHAT_ID")
 
-# പരിശോധന: കീ കൾ ലഭ്യമാണോ എന്ന് നോക്കുന്നു
 if not TELEGRAM_TOKEN or not GEMINI_API_KEY or not CHAT_ID:
-    print("Error: Missing secrets! Check GitHub Settings.")
+    print("Error: Missing secrets!")
     sys.exit(1)
 
-# Gemini AI സെറ്റപ്പ്
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+# പുതിയ Gemini Client സെറ്റപ്പ്
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 async def get_quantum_news():
     url = "https://phys.org/rss-feed/physics-news/quantum-physics/"
@@ -32,7 +30,12 @@ async def get_quantum_news():
         combined_news += f"Title: {entry.title}\nSummary: {entry.summary}\n\n"
     
     prompt = f"Summarize these Quantum Physics news into simple Malayalam bullet points:\n\n{combined_news}"
-    response = model.generate_content(prompt)
+    
+    # പുതിയ രീതിയിലുള്ള കോൾ
+    response = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents=prompt
+    )
     return response.text
 
 async def send_to_telegram():
