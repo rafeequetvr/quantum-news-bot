@@ -5,14 +5,14 @@ import os
 import sys
 from telegram import Bot
 
-# പരിസ്ഥിതി ചരങ്ങൾ (Environment Variables) സുരക്ഷിതമായി എടുക്കുന്നു
+# ശരിയായ രീതിയിൽ രഹസ്യനാമങ്ങൾ എടുക്കുന്നു
 TELEGRAM_TOKEN = os.getenv(8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q)
 GEMINI_API_KEY = os.getenv(AIzaSyAd65Dgqtn4tilMwWR-9pYu3NgwnuOTF40)
 CHAT_ID = os.getenv(1328852027)
 
-# ടോക്കണുകൾ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു (Error Handling)
+# പരിശോധന: ഏതെങ്കിലും കീ കുറവാണെങ്കിൽ പ്രോഗ്രാം ഇവിടെ നിർത്തും
 if not TELEGRAM_TOKEN or not GEMINI_API_KEY or not CHAT_ID:
-    print("Error: One or more secrets (TELEGRAM_TOKEN, GEMINI_API_KEY, CHAT_ID) are missing!")
+    print(f"Error: Missing secrets! TG: {bool(TELEGRAM_TOKEN)}, AI: {bool(GEMINI_API_KEY)}, ID: {bool(CHAT_ID)}")
     sys.exit(1)
 
 # Gemini AI സെറ്റപ്പ്
@@ -25,7 +25,7 @@ async def get_quantum_news():
     news_items = feed.entries[:3]
     
     if not news_items:
-        return "പുതിയ വാർത്തകൾ ഒന്നും ലഭ്യമല്ല."
+        return "ഇന്ന് പുതിയ വാർത്തകൾ ഒന്നും റിപ്പോർട്ട് ചെയ്തിട്ടില്ല."
 
     combined_news = ""
     for entry in news_items:
@@ -37,12 +37,13 @@ async def get_quantum_news():
 
 async def send_to_telegram():
     try:
-        bot = Bot(token=8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q)
+        bot = Bot(token=TELEGRAM_TOKEN)
         news_malayalam = await get_quantum_news()
-        await bot.send_message(chat_id=CHAT_ID, text="⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam, parse_mode='Markdown')
-        print("Message sent successfully!")
+        message = "⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam
+        await bot.send_message(chat_id=CHAT_ID, text=message, parse_mode='Markdown')
+        print("Telegram message sent!")
     except Exception as e:
-        print(f"Error occurred: {e}")
+        print(f"Error: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
