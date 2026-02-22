@@ -6,9 +6,9 @@ import sys
 from telegram import Bot
 
 # പരിസ്ഥിതി ചരങ്ങൾ (Environment Variables) സുരക്ഷിതമായി എടുക്കുന്നു
-TELEGRAM_TOKEN = os.getenv('8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q')
-GEMINI_API_KEY = os.getenv('AIzaSyAd65Dgqtn4tilMwWR-9pYu3NgwnuOTF40')
-CHAT_ID = os.getenv('1328852027')
+TELEGRAM_TOKEN = os.getenv(8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q)
+GEMINI_API_KEY = os.getenv(AIzaSyAd65Dgqtn4tilMwWR-9pYu3NgwnuOTF40)
+CHAT_ID = os.getenv(1328852027)
 
 # ടോക്കണുകൾ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു (Error Handling)
 if not TELEGRAM_TOKEN or not GEMINI_API_KEY or not CHAT_ID:
