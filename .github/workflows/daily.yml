@@ -24,7 +24,7 @@ jobs:
 
       - name: Run script
         env:
-          TELEGRAM_TOKEN: ${{8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q}}
-          GEMINI_API_KEY: ${{AIzaSyAd65Dgqtn4tilMwWR-9pYu3NgwnuOTF40}}
-          CHAT_ID: ${{1328852027}}
+          TELEGRAM_TOKEN: ${{ 8579546992:AAHumr2OPn9DyRamkqUTIJ8RPaKyX32Nu6Q }}
+          GEMINI_API_KEY: ${{ AIzaSyAd65Dgqtn4tilMwWR-9pYu3NgwnuOTF40 }}
+          CHAT_ID: ${{ 1328852027 }}
         run: python main.py
