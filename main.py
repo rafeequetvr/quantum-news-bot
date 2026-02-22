@@ -23,13 +23,14 @@ async def get_quantum_news():
     for entry in news_items:
         combined_news += f"Title: {entry.title}\nSummary: {entry.summary}\n\n"
     
+    # main.py-ൽ ഈ ഭാഗം മാത്രം ശ്രദ്ധിക്കുക
     print("Connecting to Gemini AI...")
     client = genai.Client(api_key=GEMINI_API_KEY)
     
-    # മാറ്റം വരുത്തിയ വരി ഇവിടെയാണ്: gemini-1.5-flash-latest എന്ന് നൽകി നോക്കുന്നു
     try:
+        # ഇവിടെ models/ എന്ന പ്രിഫിക്സ് ഒഴിവാക്കി നേരിട്ട് നൽകുന്നു
         response = client.models.generate_content(
-            model="gemini-1.5-flash-latest", 
+            model="gemini-1.5-flash", 
             contents=f"Summarize these news into simple Malayalam bullet points:\n\n{combined_news}"
         )
         return response.text
