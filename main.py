@@ -23,20 +23,25 @@ async def get_quantum_news():
     for entry in news_items:
         combined_news += f"Title: {entry.title}\nSummary: {entry.summary}\n\n"
     
-    # main.py-ൽ ഈ ഭാഗം മാത്രം ശ്രദ്ധിക്കുക
     print("Connecting to Gemini AI...")
     client = genai.Client(api_key=GEMINI_API_KEY)
     
-    try:
-        # ഇവിടെ models/ എന്ന പ്രിഫിക്സ് ഒഴിവാക്കി നേരിട്ട് നൽകുന്നു
-        response = client.models.generate_content(
-            model="gemini-1.5-flash", 
-            contents=f"Summarize these news into simple Malayalam bullet points:\n\n{combined_news}"
-        )
-        return response.text
-    except Exception as e:
-        print(f"AI Error: {e}")
-        return "AI പരിഭാഷയിൽ ഒരു തടസ്സം നേരിട്ടു."
+    # പല മോഡൽ പേരുകൾ പരീക്ഷിക്കുന്നു (404 ഒഴിവാക്കാൻ)
+    models_to_try = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"]
+    
+    for model_name in models_to_try:
+        try:
+            print(f"Trying model: {model_name}...")
+            response = client.models.generate_content(
+                model=model_name, 
+                contents=f"Summarize these news into simple Malayalam bullet points:\n\n{combined_news}"
+            )
+            return response.text
+        except Exception as e:
+            print(f"Failed with {model_name}: {e}")
+            continue # അടുത്ത മോഡൽ നോക്കുന്നു
+            
+    return "AI പരിഭാഷപ്പെടുത്താൻ സാധിച്ചില്ല. ദയവായി API Key പരിശോധിക്കുക."
 
 async def send_to_telegram():
     try:
@@ -53,10 +58,10 @@ async def send_to_telegram():
         )
         print("✅ SUCCESS: Message sent to Telegram!")
     except Exception as e:
-        print(f"❌ ERROR: {e}")
+        print(f"❌ TELEGRAM ERROR: {e}")
 
 if __name__ == "__main__":
     if not TELEGRAM_TOKEN or not GEMINI_API_KEY or not CHAT_ID:
-        print("❌ ERROR: Missing Secrets!")
+        print("❌ ERROR: Missing Secrets in GitHub Settings!")
     else:
         asyncio.run(send_to_telegram())
