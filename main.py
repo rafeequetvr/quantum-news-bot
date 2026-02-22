@@ -5,7 +5,7 @@ import sys
 from google import genai
 from telegram import Bot
 
-# രഹസ്യകോഡുകൾ എടുക്കുന്നു
+# Secrets എടുക്കുന്നു
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -14,7 +14,7 @@ if not TELEGRAM_TOKEN or not GEMINI_API_KEY or not CHAT_ID:
     print("Error: Missing secrets!")
     sys.exit(1)
 
-# പുതിയ Gemini Client സെറ്റപ്പ്
+# പുതിയ ക്ലയന്റ് സെറ്റപ്പ്
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 async def get_quantum_news():
@@ -31,9 +31,9 @@ async def get_quantum_news():
     
     prompt = f"Summarize these Quantum Physics news into simple Malayalam bullet points:\n\n{combined_news}"
     
-    # പുതിയ രീതിയിലുള്ള കോൾ
+    # മോഡലിന്റെ പേര് ഇവിടെ കൃത്യമായി നൽകിയിരിക്കുന്നു
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-1.5-flash", 
         contents=prompt
     )
     return response.text
@@ -43,7 +43,7 @@ async def send_to_telegram():
         bot = Bot(token=TELEGRAM_TOKEN)
         news_malayalam = await get_quantum_news()
         await bot.send_message(chat_id=CHAT_ID, text="⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam, parse_mode='Markdown')
-        print("Success!")
+        print("Success! Message sent to Telegram.")
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
