@@ -1,12 +1,12 @@
 import feedparser
 import asyncio
 import os
-from google import genai
+from groq import Groq
 from telegram import Bot
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 async def get_quantum_news():
     print("Fetching news from Phys.org...")
@@ -19,16 +19,15 @@ async def get_quantum_news():
 
     combined_news = "\n".join([f"Title: {e.title}\nSummary: {e.summary}" for e in news_items])
 
-    print("Connecting to Gemini AI...")
+    print("Connecting to Groq AI...")
     try:
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        prompt = f"Summarize these Quantum Physics news into simple Malayalam bullet points. Focus on key details:\n\n{combined_news}"
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
+        client = Groq(api_key=GROQ_API_KEY)
+        response = client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=[{"role": "user", "content": f"Summarize these Quantum Physics news into simple Malayalam bullet points. Focus on key details:\n\n{combined_news}"}],
+            max_tokens=500
         )
-        print(f"Gemini Response: {response.text}")
-        return response.text
+        return response.choices[0].message.content
 
     except Exception as e:
         print(f"AI Error: {e}")
@@ -36,16 +35,9 @@ async def get_quantum_news():
 
 async def send_to_telegram():
     try:
-        print(f"TELEGRAM_TOKEN: {TELEGRAM_TOKEN[:10]}...")
-        print(f"CHAT_ID: {CHAT_ID}")
-
         bot = Bot(token=TELEGRAM_TOKEN)
-        bot_info = await bot.get_me()
-        print(f"Bot Name: {bot_info.first_name}")
-
         news_malayalam = await get_quantum_news()
         print("Sending to Telegram...")
-
         await bot.send_message(
             chat_id=CHAT_ID,
             text="⚛️ ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ\n\n" + news_malayalam,
@@ -55,10 +47,7 @@ async def send_to_telegram():
         print(f"Telegram Error: {e}")
 
 if __name__ == "__main__":
-    if not TELEGRAM_TOKEN or not CHAT_ID or not GEMINI_API_KEY:
+    if not TELEGRAM_TOKEN or not CHAT_ID or not GROQ_API_KEY:
         print("Missing Secrets!")
-        print(f"TELEGRAM_TOKEN: {TELEGRAM_TOKEN}")
-        print(f"CHAT_ID: {CHAT_ID}")
-        print(f"GEMINI_API_KEY: {GEMINI_API_KEY}")
     else:
         asyncio.run(send_to_telegram())
