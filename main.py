@@ -27,6 +27,7 @@ async def get_quantum_news():
             model="gemini-2.0-flash",
             contents=prompt
         )
+        print(f"Gemini Response: {response.text}")
         return response.text
 
     except Exception as e:
@@ -35,13 +36,19 @@ async def get_quantum_news():
 
 async def send_to_telegram():
     try:
+        print(f"TELEGRAM_TOKEN: {TELEGRAM_TOKEN[:10]}...")
+        print(f"CHAT_ID: {CHAT_ID}")
+
         bot = Bot(token=TELEGRAM_TOKEN)
+        bot_info = await bot.get_me()
+        print(f"Bot Name: {bot_info.first_name}")
+
         news_malayalam = await get_quantum_news()
         print("Sending to Telegram...")
+
         await bot.send_message(
             chat_id=CHAT_ID,
-            text="⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam,
-            parse_mode='Markdown'
+            text="⚛️ ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ\n\n" + news_malayalam,
         )
         print("SUCCESS!")
     except Exception as e:
@@ -50,5 +57,8 @@ async def send_to_telegram():
 if __name__ == "__main__":
     if not TELEGRAM_TOKEN or not CHAT_ID or not GEMINI_API_KEY:
         print("Missing Secrets!")
+        print(f"TELEGRAM_TOKEN: {TELEGRAM_TOKEN}")
+        print(f"CHAT_ID: {CHAT_ID}")
+        print(f"GEMINI_API_KEY: {GEMINI_API_KEY}")
     else:
         asyncio.run(send_to_telegram())
