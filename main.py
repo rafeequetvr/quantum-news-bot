@@ -22,7 +22,8 @@ async def get_quantum_news():
     
     print("Connecting to Gemini via REST API...")
     # പുതിയ SDK പ്രശ്നമുണ്ടാക്കുന്നതുകൊണ്ട് നേരിട്ട് REST API ഉപയോഗിക്കുന്നു
-    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    # ഈ വരി മാത്രം ശ്രദ്ധിച്ച് മാറ്റുക
+    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
     
     payload = {
         "contents": [{
