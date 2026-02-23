@@ -1,16 +1,13 @@
 import feedparser
 import asyncio
 import os
-import google.generativeai as genai
+from google import genai
 from telegram import Bot
 
 # Secrets
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 CHAT_ID = os.getenv("CHAT_ID")
-
-# AI കോൺഫിഗറേഷൻ
-genai.configure(api_key=GEMINI_API_KEY)
 
 async def get_quantum_news():
     print("Fetching news from Phys.org...")
@@ -23,17 +20,27 @@ async def get_quantum_news():
 
     combined_news = "\n".join([f"Title: {e.title}\nSummary: {e.summary}" for e in news_items])
     
-    print("Connecting to Gemini AI...")
+    print("Connecting to Gemini AI (New SDK)...")
+    # പുതിയ SDK ഉപയോഗിക്കുന്നു
+    client = genai.Client(api_key=GEMINI_API_KEY)
+    
     try:
-        # ഏറ്റവും സ്റ്റേബിൾ ആയ മോഡൽ വേർഷൻ
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(
-            f"Summarize these Quantum Physics news into simple Malayalam bullet points:\n\n{combined_news}"
+        # ഇവിടെ 'gemini-1.5-flash' എന്ന് മാത്രം നൽകിയാൽ മതി
+        response = client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=f"Summarize these news into simple Malayalam bullet points:\n\n{combined_news}"
         )
         return response.text
     except Exception as e:
         print(f"❌ AI Error: {e}")
-        return "AI പരിഭാഷയിൽ ഒരു ചെറിയ സാങ്കേതിക പ്രശ്നം. ഉടൻ ശരിയാക്കാം!"
+        # എറർ വന്നാൽ ഏതൊക്കെ മോഡലുകൾ ഉണ്ടെന്ന് പരിശോധിക്കുന്നു
+        print("Checking available models for your API Key...")
+        try:
+            for m in client.models.list():
+                print(f"Available Model: {m.name}")
+        except:
+            pass
+        return "AI പരിഭാഷയിൽ സാങ്കേതിക തടസ്സം നേരിട്ടു."
 
 async def send_to_telegram():
     try:
@@ -41,7 +48,6 @@ async def send_to_telegram():
         news_malayalam = await get_quantum_news()
         
         print("Sending to Telegram...")
-        # മെസേജ് അയക്കുന്നു
         await bot.send_message(
             chat_id=CHAT_ID, 
             text="⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam, 
@@ -53,6 +59,6 @@ async def send_to_telegram():
 
 if __name__ == "__main__":
     if not all([TELEGRAM_TOKEN, GEMINI_API_KEY, CHAT_ID]):
-        print("❌ Missing Secrets in GitHub Settings!")
+        print("❌ Missing Secrets!")
     else:
         asyncio.run(send_to_telegram())
