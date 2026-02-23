@@ -19,16 +19,17 @@ async def get_quantum_news():
 
     combined_news = "\n".join([f"Title: {e.title}\nSummary: {e.summary}" for e in news_items])
     
-    print("Connecting to Free AI (DuckDuckGo)...")
+    print("Connecting to DuckDuckGo AI...")
     try:
-        # Gemini-ക്ക് പകരം സൗജന്യ AI ഉപയോഗിക്കുന്നു
+        # പുതിയ സിസ്റ്റം അനുസരിച്ചുള്ള AI കോൾ
         with DDGS() as ddgs:
             prompt = f"Summarize these Quantum Physics news into simple Malayalam bullet points:\n\n{combined_news}"
-            results = ddgs.chat(prompt, model='gpt-4o-mini')
-            return results
+            # പുതിയ വേർഷനിൽ chat ഫങ്ക്ഷൻ ഉപയോഗിക്കുന്ന രീതി
+            response = ddgs.chat(prompt, model='gpt-4o-mini')
+            return response
     except Exception as e:
         print(f"❌ AI Error: {e}")
-        return "AI പരിഭാഷയിൽ ഒരു ചെറിയ സാങ്കേതിക തടസ്സം."
+        return "AI വാർത്തകൾ തയ്യാറാക്കുന്നതിൽ ഒരു സാങ്കേതിക പ്രശ്നം."
 
 async def send_to_telegram():
     try:
