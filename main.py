@@ -20,20 +20,29 @@ async def get_quantum_news():
 
     combined_news = "\n".join([f"Title: {e.title}\nSummary: {e.summary}" for e in news_items])
     
-    print("Connecting to Gemini AI using NEW SDK...")
-    # പുതിയ SDK ക്ലയന്റ്
+    print("Connecting to Gemini AI...")
     client = genai.Client(api_key=GEMINI_API_KEY)
     
+    # നിങ്ങളുടെ കീയിൽ ലഭ്യമായ മോഡലുകൾ ലിസ്റ്റ് ചെയ്ത് അതിൽ നിന്ന് ഒന്ന് തിരഞ്ഞെടുക്കുന്നു
+    available_model = "gemini-1.5-flash" # Default
     try:
-        # ഇവിടെ models/ എന്ന പ്രിഫിക്സ് ഇല്ലാതെ നൽകുന്നു
+        for m in client.models.list():
+            if 'generateContent' in m.supported_methods:
+                available_model = m.name
+                break
+        print(f"Using available model: {available_model}")
+    except:
+        print("Could not list models, using default.")
+
+    try:
         response = client.models.generate_content(
-            model="gemini-1.5-flash", 
-            contents=f"Summarize these Quantum Physics news into simple Malayalam bullet points:\n\n{combined_news}"
+            model=available_model, 
+            contents=f"Summarize these news into simple Malayalam bullet points:\n\n{combined_news}"
         )
         return response.text
     except Exception as e:
         print(f"❌ AI Error: {e}")
-        return "AI പരിഭാഷയിൽ പ്രശ്നം നേരിട്ടു. API Key അല്ലെങ്കിൽ Model ശരിയാണോ എന്ന് പരിശോധിക്കുക."
+        return "AI വാർത്തകൾ തയ്യാറാക്കുന്നതിൽ ഒരു സാങ്കേതിക പ്രശ്നം. ഉടൻ പരിഹരിക്കും."
 
 async def send_to_telegram():
     try:
@@ -52,6 +61,6 @@ async def send_to_telegram():
 
 if __name__ == "__main__":
     if not all([TELEGRAM_TOKEN, GEMINI_API_KEY, CHAT_ID]):
-        print("❌ Missing Secrets in GitHub Settings!")
+        print("❌ Missing Secrets!")
     else:
         asyncio.run(send_to_telegram())
