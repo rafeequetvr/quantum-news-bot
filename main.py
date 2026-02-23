@@ -1,16 +1,15 @@
 import feedparser
 import asyncio
 import os
-import requests
+from duckduckgo_search import DDGS
 from telegram import Bot
 
 # Secrets
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 CHAT_ID = os.getenv("CHAT_ID")
 
 async def get_quantum_news():
-    print("Fetching news...")
+    print("Fetching news from Phys.org...")
     url = "https://phys.org/rss-feed/physics-news/quantum-physics/"
     feed = feedparser.parse(url)
     news_items = feed.entries[:3]
@@ -20,35 +19,22 @@ async def get_quantum_news():
 
     combined_news = "\n".join([f"Title: {e.title}\nSummary: {e.summary}" for e in news_items])
     
-    print("Connecting to Gemini via Stable REST API (v1)...")
-    
-    # മോഡലിന്റെ പേര് അല്പം മാറ്റുന്നു
-    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={GEMINI_API_KEY}"
-    
-    payload = {
-        "contents": [{
-            "parts": [{"text": f"Summarize these Quantum Physics news into simple Malayalam bullet points:\n\n{combined_news}"}]
-        }]
-    }
-
+    print("Connecting to Free AI (DuckDuckGo)...")
     try:
-        response = requests.post(api_url, json=payload)
-        result = response.json()
-        
-        # എറർ ഉണ്ടോ എന്ന് ചെക്ക് ചെയ്യുന്നു
-        if "error" in result:
-            print(f"❌ API Error Details: {result['error']['message']}")
-            return "AI വാർത്തകൾ തയ്യാറാക്കുന്നതിൽ ഒരു സാങ്കേതിക പ്രശ്നം നേരിട്ടു."
-            
-        return result['candidates'][0]['content']['parts'][0]['text']
+        # Gemini-ക്ക് പകരം സൗജന്യ AI ഉപയോഗിക്കുന്നു
+        with DDGS() as ddgs:
+            prompt = f"Summarize these Quantum Physics news into simple Malayalam bullet points:\n\n{combined_news}"
+            results = ddgs.chat(prompt, model='gpt-4o-mini')
+            return results
     except Exception as e:
-        print(f"❌ Script Error: {e}")
-        return "വാർത്തകൾ പരിഭാഷപ്പെടുത്താൻ സാധിച്ചില്ല."
+        print(f"❌ AI Error: {e}")
+        return "AI പരിഭാഷയിൽ ഒരു ചെറിയ സാങ്കേതിക തടസ്സം."
 
 async def send_to_telegram():
     try:
         bot = Bot(token=TELEGRAM_TOKEN)
         news_malayalam = await get_quantum_news()
+        
         print("Sending to Telegram...")
         await bot.send_message(
             chat_id=CHAT_ID, 
@@ -60,4 +46,7 @@ async def send_to_telegram():
         print(f"❌ Telegram Error: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(send_to_telegram())
+    if not TELEGRAM_TOKEN or not CHAT_ID:
+        print("❌ Missing Secrets!")
+    else:
+        asyncio.run(send_to_telegram())
