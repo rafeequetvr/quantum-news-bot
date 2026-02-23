@@ -23,7 +23,7 @@ async def get_quantum_news():
     try:
         client = Groq(api_key=GROQ_API_KEY)
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": f"Summarize these Quantum Physics news into simple Malayalam bullet points. Focus on key details:\n\n{combined_news}"}],
             max_tokens=500
         )
