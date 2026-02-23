@@ -22,8 +22,8 @@ async def get_quantum_news():
     
     print("Connecting to Gemini via Stable REST API (v1)...")
     
-    # മാറ്റം ഇവിടെയാണ്: v1beta എന്നതിന് പകരം v1 എന്ന് നൽകുന്നു
-    api_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    # മോഡലിന്റെ പേര് അല്പം മാറ്റുന്നു
+    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={GEMINI_API_KEY}"
     
     payload = {
         "contents": [{
