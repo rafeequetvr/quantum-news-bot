@@ -20,10 +20,10 @@ async def get_quantum_news():
 
     combined_news = "\n".join([f"Title: {e.title}\nSummary: {e.summary}" for e in news_items])
     
-    print("Connecting to Gemini via REST API...")
-    # പുതിയ SDK പ്രശ്നമുണ്ടാക്കുന്നതുകൊണ്ട് നേരിട്ട് REST API ഉപയോഗിക്കുന്നു
-    # ഈ വരി മാത്രം ശ്രദ്ധിച്ച് മാറ്റുക
-    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
+    print("Connecting to Gemini via Stable REST API (v1)...")
+    
+    # മാറ്റം ഇവിടെയാണ്: v1beta എന്നതിന് പകരം v1 എന്ന് നൽകുന്നു
+    api_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     
     payload = {
         "contents": [{
@@ -34,18 +34,27 @@ async def get_quantum_news():
     try:
         response = requests.post(api_url, json=payload)
         result = response.json()
-        # AI നൽകുന്ന മറുപടി എടുക്കുന്നു
+        
+        # എറർ ഉണ്ടോ എന്ന് ചെക്ക് ചെയ്യുന്നു
+        if "error" in result:
+            print(f"❌ API Error Details: {result['error']['message']}")
+            return "AI വാർത്തകൾ തയ്യാറാക്കുന്നതിൽ ഒരു സാങ്കേതിക പ്രശ്നം നേരിട്ടു."
+            
         return result['candidates'][0]['content']['parts'][0]['text']
     except Exception as e:
-        print(f"❌ AI Error: {e}\nResponse: {response.text}")
-        return "AI വാർത്തകൾ തയ്യാറാക്കുന്നതിൽ ഒരു തടസ്സം നേരിട്ടു."
+        print(f"❌ Script Error: {e}")
+        return "വാർത്തകൾ പരിഭാഷപ്പെടുത്താൻ സാധിച്ചില്ല."
 
 async def send_to_telegram():
     try:
         bot = Bot(token=TELEGRAM_TOKEN)
         news_malayalam = await get_quantum_news()
         print("Sending to Telegram...")
-        await bot.send_message(chat_id=CHAT_ID, text="⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam, parse_mode='Markdown')
+        await bot.send_message(
+            chat_id=CHAT_ID, 
+            text="⚛️ *ഇന്നത്തെ ക്വാണ്ടം വാർത്തകൾ*\n\n" + news_malayalam, 
+            parse_mode='Markdown'
+        )
         print("✅ SUCCESS!")
     except Exception as e:
         print(f"❌ Telegram Error: {e}")
