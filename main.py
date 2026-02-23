@@ -54,12 +54,3 @@ if __name__ == "__main__":
         print("❌ Missing Secrets!")
     else:
         asyncio.run(send_to_telegram())
-```
-
----
-
-**requirements.txt ഇങ്ങനെ ആക്കുക:**
-```
-feedparser
-python-telegram-bot
-google-generativeai
