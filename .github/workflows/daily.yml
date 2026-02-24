@@ -2,8 +2,8 @@ name: Quantum News Bot
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # എല്ലാ ദിവസവും രാവിലെ 6:00 AM (UTC)
-  workflow_dispatch:  # Manual run ചെയ്യാനും
+    - cron: '0 * * * *'  # ഓരോ മണിക്കൂറിലും ചെക്ക് ചെയ്യും
+  workflow_dispatch:      # നിങ്ങൾക്ക് എപ്പോൾ വേണമെങ്കിലും നേരിട്ട് റൺ ചെയ്യാം
 
 jobs:
   send-news:
