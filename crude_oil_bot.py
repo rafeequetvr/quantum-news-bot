@@ -52,7 +52,8 @@ async def get_crude_oil_news():
     print("New crude oil news found! Connecting to Groq AI...")
     try:
         client = Groq(api_key=GROQ_API_KEY)
-        content = f"Title: {latest_entry.title}\nSummary: {latest_entry.summary}"
+        summary = getattr(latest_entry, 'summary', latest_entry.title)
+        content = f"Title: {latest_entry.title}\nSummary: {summary}"
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[{
