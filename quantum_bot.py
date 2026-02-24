@@ -9,7 +9,7 @@ CHAT_ID = os.getenv("CHAT_ID")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # അവസാനമായി അയച്ച വാർത്തയുടെ ലിങ്ക് സൂക്ഷിക്കുന്ന ഫയൽ
-LAST_LINK_FILE = "last_link.txt"
+LAST_LINK_FILE = "quantum_bot.txt"
 
 def get_last_link():
     if os.path.exists(LAST_LINK_FILE):
